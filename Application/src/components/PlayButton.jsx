@@ -1,18 +1,24 @@
 import * as Tone from 'tone';
+import { generateChordProgression } from '../utils/generateChordProgression';
 
 function PlayButton() {
   const playChord = async () => {
-    await Tone.start(); // Start audio context (required by Tone.js)
-
+    await Tone.start();
     const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
-    // Play a C major triad (C, E, G)
-    synth.triggerAttackRelease(['C4', 'E4', 'G4'], '1n');
+    const progression = generateChordProgression('C', 4);
+    console.log('Generated Progression:', progression);
+
+    // Play chords one at a time (500ms apart)
+    for (let chord of progression) {
+      synth.triggerAttackRelease(chord.split(' '), '1n');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
   };
 
   return (
     <button onClick={playChord}>
-      Play Chord
+      Generate & Play Progression
     </button>
   );
 }
