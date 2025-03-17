@@ -28,12 +28,20 @@ function PlayButton() {
           const chordObj = Chord.get(chordSymbol);
           const notes = chordObj.notes.map(note => note + '4'); // Add octave
           console.log('Notes:', notes);
+          
+          // Release any currently playing notes
+          synth.releaseAll();
+          
+          // Play the new chord
           synth.triggerAttackRelease(notes, '1n');
+          
+          // Wait for the chord to finish playing
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
 
-      synth.releaseAll(); // Stop any lingering sounds
+      // Final cleanup
+      synth.releaseAll();
     } catch (error) {
       console.error('Error playing chord progression:', error);
     }
