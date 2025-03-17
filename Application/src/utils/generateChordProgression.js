@@ -9,12 +9,13 @@ export function generateChordProgression(key = 'C', progressionLength = 4) {
   for (let i = 0; i < progressionLength; i++) {
     const note = scaleNotes[Math.floor(Math.random() * scaleNotes.length)];
     const type = CHORD_TYPES[Math.floor(Math.random() * CHORD_TYPES.length)];
-
-    // Chord.get() returns a structured object with note array
-    const fullChord = Chord.get(note + type);
-
-    if (fullChord.notes.length) {
-      progression.push(fullChord.notes.map(n => `${n}4`)); // Add octave for clarity
+    
+    // Get the chord object to ensure valid chord
+    const chordObj = Chord.get(note + type);
+    
+    if (chordObj.notes.length) {
+      // Return the chord symbol in a format Tone.js can understand
+      progression.push(note + type);
     }
   }
 
