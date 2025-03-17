@@ -1,6 +1,6 @@
 import { Scale, Chord } from 'tonal';
 
-const CHORD_TYPES = ['maj', 'min', 'dim', 'aug'];
+const CHORD_TYPES = ['', 'm', 'dim', 'aug'];
 
 export function generateChordProgression(key = 'C', progressionLength = 4) {
   const scaleNotes = Scale.get(`${key} major`).notes;
@@ -9,9 +9,13 @@ export function generateChordProgression(key = 'C', progressionLength = 4) {
   for (let i = 0; i < progressionLength; i++) {
     const note = scaleNotes[Math.floor(Math.random() * scaleNotes.length)];
     const type = CHORD_TYPES[Math.floor(Math.random() * CHORD_TYPES.length)];
-    const fullChord = Chord.getChord(type, note);
 
-    progression.push(fullChord.symbol || `${note}${type}`);
+    // Chord.get() returns a structured object with note array
+    const fullChord = Chord.get(note + type);
+
+    if (fullChord.notes.length) {
+      progression.push(fullChord.notes.map(n => `${n}4`)); // Add octave for clarity
+    }
   }
 
   return progression;

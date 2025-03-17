@@ -9,11 +9,15 @@ function PlayButton() {
     const progression = generateChordProgression('C', 4);
     console.log('Generated Progression:', progression);
 
-    // Play chords one at a time (500ms apart)
     for (let chord of progression) {
-      synth.triggerAttackRelease(chord.split(' '), '1n');
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (chord.length) {
+        console.log('Playing:', chord);
+        synth.triggerAttackRelease(chord, '1n');
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
+
+    synth.releaseAll(); // Stop any lingering sounds
   };
 
   return (
