@@ -14,6 +14,7 @@ function PlayButton() {
   const [startOnTonic, setStartOnTonic] = useState(true);
   const [isRepeating, setIsRepeating] = useState(false);
   const [tempo, setTempo] = useState(60);
+  const [tempoInput, setTempoInput] = useState('60');
   const synthRef = useRef(null);
   const intervalRef = useRef(null);
 
@@ -145,13 +146,24 @@ function PlayButton() {
             id="tempo"
             min="30"
             max="200"
-            value={tempo}
+            value={tempoInput}
             onChange={(e) => {
-              const newTempo = Math.min(200, Math.max(30, parseInt(e.target.value) || 60));
-              setTempo(newTempo);
-              // If currently repeating, restart the loop with new tempo
-              if (isRepeating && currentProgression.length > 0) {
-                startRepeatLoop(currentProgression);
+              const inputValue = e.target.value;
+              setTempoInput(inputValue);
+              
+              const newTempo = parseInt(inputValue);
+              if (!isNaN(newTempo) && newTempo >= 30 && newTempo <= 200) {
+                setTempo(newTempo);
+                // If currently repeating, restart the loop with new tempo
+                if (isRepeating && currentProgression.length > 0) {
+                  startRepeatLoop(currentProgression);
+                }
+              }
+            }}
+            onBlur={() => {
+              const newTempo = parseInt(tempoInput);
+              if (isNaN(newTempo) || newTempo < 30 || newTempo > 200) {
+                setTempoInput(tempo.toString());
               }
             }}
           />
