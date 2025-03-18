@@ -137,12 +137,14 @@ function PlayButton() {
         <button onClick={playChord} disabled={isRepeating}>
           Generate & Play Progression
         </button>
-        <button 
-          onClick={toggleRepeat}
-          className={isRepeating ? 'active' : ''}
-        >
-          {isRepeating ? 'Stop Repeat' : 'Repeat Progression'}
-        </button>
+        {currentProgression.length > 0 && (
+          <button 
+            onClick={toggleRepeat}
+            className={isRepeating ? 'active' : ''}
+          >
+            {isRepeating ? 'Stop Repeat' : 'Repeat Progression'}
+          </button>
+        )}
       </div>
       <ChordDisplay progression={currentProgression} />
     </div>
