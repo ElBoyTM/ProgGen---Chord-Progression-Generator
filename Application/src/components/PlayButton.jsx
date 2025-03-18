@@ -13,6 +13,7 @@ function PlayButton() {
   const [selectedLength, setSelectedLength] = useState('4');
   const [startOnTonic, setStartOnTonic] = useState(true);
   const [isRepeating, setIsRepeating] = useState(false);
+  const [tempo, setTempo] = useState(60);
   const synthRef = useRef(null);
   const intervalRef = useRef(null);
 
@@ -36,7 +37,10 @@ function PlayButton() {
       setCurrentProgression(progression);
       console.log('Generated Progression:', progression);
 
-      // Play chords one at a time (1 second apart)
+      // Calculate delay based on tempo
+      const delayMs = (60 / tempo) * 1000;
+
+      // Play chords one at a time at the specified tempo
       for (let chordSymbol of progression) {
         if (chordSymbol.length) {
           console.log('Playing:', chordSymbol);
@@ -45,9 +49,9 @@ function PlayButton() {
           console.log('Notes:', notes);
           
           synthRef.current.releaseAll();
-          synthRef.current.triggerAttackRelease(notes, '1n');
+          synthRef.current.triggerAttackRelease(notes, `${60/tempo}n`);
           
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, delayMs));
         }
       }
 
@@ -68,6 +72,9 @@ function PlayButton() {
 
     let currentIndex = 0;
     
+    // Calculate delay based on tempo
+    const delayMs = (60 / tempo) * 1000;
+    
     // Start a new interval that plays the progression
     intervalRef.current = setInterval(() => {
       if (currentIndex >= progression.length) {
@@ -79,10 +86,10 @@ function PlayButton() {
         const chordObj = Chord.get(chordSymbol);
         const notes = chordObj.notes.map(note => note + '4');
         synthRef.current.releaseAll();
-        synthRef.current.triggerAttackRelease(notes, '1n');
+        synthRef.current.triggerAttackRelease(notes, `${60/tempo}n`);
       }
       currentIndex++;
-    }, 1000);
+    }, delayMs);
   };
 
   const toggleRepeat = () => {
@@ -130,6 +137,24 @@ function PlayButton() {
             onChange={(e) => setStartOnTonic(e.target.checked)}
           />
           <label htmlFor="start-on-tonic">Always start on tonic</label>
+        </div>
+        <div className="tempo-control">
+          <label htmlFor="tempo">Tempo (BPM):</label>
+          <input
+            type="number"
+            id="tempo"
+            min="30"
+            max="200"
+            value={tempo}
+            onChange={(e) => {
+              const newTempo = Math.min(200, Math.max(30, parseInt(e.target.value) || 60));
+              setTempo(newTempo);
+              // If currently repeating, restart the loop with new tempo
+              if (isRepeating && currentProgression.length > 0) {
+                startRepeatLoop(currentProgression);
+              }
+            }}
+          />
         </div>
       </div>
       <div className="button-group">
