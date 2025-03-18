@@ -32,8 +32,14 @@ export function generateChordProgression(key = 'C', mode = 'major', progressionL
     // Generate progression using the mode's chord types
     const chordTypes = MODE_CHORD_TYPES[mode] || MODE_CHORD_TYPES.major;
     
+    // Create array of available scale positions (0-6)
+    const availablePositions = Array.from({ length: scale.notes.length }, (_, i) => i);
+    
     for (let i = 0; i < progressionLength; i++) {
-      const scalePosition = i % scale.notes.length;
+      // Randomly select a scale position
+      const randomIndex = Math.floor(Math.random() * availablePositions.length);
+      const scalePosition = availablePositions[randomIndex];
+      
       const note = scale.notes[scalePosition];
       const chordType = chordTypes[scalePosition];
       progression.push(note + chordType);
