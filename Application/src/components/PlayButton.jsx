@@ -2,10 +2,12 @@ import * as Tone from 'tone';
 import { generateChordProgression } from '../utils/generateChordProgression';
 import { useState } from 'react';
 import ChordDisplay from './ChordDisplay';
+import KeySelector from './KeySelector';
 import { Chord } from 'tonal';
 
 function PlayButton() {
   const [currentProgression, setCurrentProgression] = useState([]);
+  const [selectedKey, setSelectedKey] = useState('C');
 
   const playChord = async () => {
     try {
@@ -16,7 +18,7 @@ function PlayButton() {
       const synth = new Tone.PolySynth(Tone.Synth).toDestination();
       synth.volume.value = -10;
 
-      const progression = generateChordProgression('C', 4);
+      const progression = generateChordProgression(selectedKey, 4);
       setCurrentProgression(progression);
       console.log('Generated Progression:', progression);
 
@@ -49,6 +51,10 @@ function PlayButton() {
 
   return (
     <div>
+      <KeySelector 
+        selectedKey={selectedKey} 
+        onKeyChange={setSelectedKey} 
+      />
       <button onClick={playChord}>
         Generate & Play Progression
       </button>
