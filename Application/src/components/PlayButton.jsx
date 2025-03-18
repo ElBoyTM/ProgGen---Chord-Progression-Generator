@@ -94,7 +94,6 @@ function PlayButton() {
       }
       if (synthRef.current) {
         synthRef.current.releaseAll();
-        synthRef.current = null;
       }
       setIsRepeating(false);
     } else {
