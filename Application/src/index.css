@@ -153,7 +153,8 @@ button:focus-visible {
   font-size: 1rem;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: white;
+  background-color: #1a1a1a;
+  color: #fff;
   cursor: pointer;
   min-width: 120px;
 }
@@ -166,4 +167,9 @@ button:focus-visible {
   outline: none;
   border-color: #646cff;
   box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.key-selector select option {
+  background-color: #1a1a1a;
+  color: #fff;
 }
