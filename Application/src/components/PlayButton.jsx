@@ -3,12 +3,14 @@ import { generateChordProgression } from '../utils/generateChordProgression';
 import { useState } from 'react';
 import ChordDisplay from './ChordDisplay';
 import KeySelector from './KeySelector';
+import LengthSelector from './LengthSelector';
 import { Chord } from 'tonal';
 
 function PlayButton() {
   const [currentProgression, setCurrentProgression] = useState([]);
   const [selectedKey, setSelectedKey] = useState('C');
   const [selectedMode, setSelectedMode] = useState('major');
+  const [selectedLength, setSelectedLength] = useState('4');
 
   const playChord = async () => {
     try {
@@ -19,7 +21,12 @@ function PlayButton() {
       const synth = new Tone.PolySynth(Tone.Synth).toDestination();
       synth.volume.value = -10;
 
-      const progression = generateChordProgression(selectedKey, selectedMode, 4);
+      // Determine the length of the progression
+      const length = selectedLength === 'random' 
+        ? Math.floor(Math.random() * 8) + 1 
+        : parseInt(selectedLength);
+
+      const progression = generateChordProgression(selectedKey, selectedMode, length);
       setCurrentProgression(progression);
       console.log('Generated Progression:', progression);
 
@@ -52,12 +59,18 @@ function PlayButton() {
 
   return (
     <div>
-      <KeySelector 
-        selectedKey={selectedKey} 
-        selectedMode={selectedMode}
-        onKeyChange={setSelectedKey}
-        onModeChange={setSelectedMode}
-      />
+      <div className="controls">
+        <KeySelector 
+          selectedKey={selectedKey} 
+          selectedMode={selectedMode}
+          onKeyChange={setSelectedKey}
+          onModeChange={setSelectedMode}
+        />
+        <LengthSelector
+          selectedLength={selectedLength}
+          onLengthChange={setSelectedLength}
+        />
+      </div>
       <button onClick={playChord}>
         Generate & Play Progression
       </button>

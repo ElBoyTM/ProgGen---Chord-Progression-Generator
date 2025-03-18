@@ -173,3 +173,11 @@ button:focus-visible {
   background-color: #1a1a1a;
   color: #fff;
 }
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
