@@ -5,46 +5,62 @@ const CHORD_TYPES = ['', 'm', 'dim', 'aug'];
 
 // Define chord types for each scale degree in different modes
 const MODE_CHORD_TYPES = {
-  major: ['', 'm', 'm', '', '', 'm', 'dim'], // Ionian
-  dorian: ['m', 'm', '', '', 'm', 'dim', ''],
-  phrygian: ['m', '', '', 'm', 'dim', '', 'm'],
-  lydian: ['', '', '', 'dim', '', 'm', 'm'],
-  mixolydian: ['', 'm', 'm', '', 'm', 'dim', ''],
-  minor: ['m', 'dim', '', 'm', 'm', '', ''], // Aeolian
-  locrian: ['dim', '', 'm', 'm', '', '', 'm']
+  major: ['', 'm', 'm', '', 'm', 'dim', '°'],
+  minor: ['m', 'dim', '', 'm', 'm', '', ''],
+  dorian: ['m', 'm', '', 'm', 'dim', '', 'm'],
+  phrygian: ['m', '', 'm', 'm', 'm', 'dim', ''],
+  lydian: ['', '', 'm', 'dim', 'm', 'm', 'm'],
+  mixolydian: ['', 'm', 'dim', 'm', 'm', 'm', ''],
+  aeolian: ['m', 'dim', '', 'm', 'm', '', ''],
+  locrian: ['dim', '', 'm', 'm', 'm', '', 'm']
 };
 
-export function generateChordProgression(key = 'C', mode = 'major', progressionLength = 4) {
-  const progression = [];
-  
-  if (mode === 'chromatic') {
-    // Generate random chromatic progression
-    for (let i = 0; i < progressionLength; i++) {
-      const note = ALL_NOTES[Math.floor(Math.random() * ALL_NOTES.length)];
-      const type = CHORD_TYPES[Math.floor(Math.random() * CHORD_TYPES.length)];
-      progression.push(note + type);
+export function generateChordProgression(key, mode, length, startOnTonic = true) {
+  // If no key is provided, generate random chromatic progression
+  if (!key) {
+    const progression = [];
+    for (let i = 0; i < length; i++) {
+      const randomNote = ALL_NOTES[Math.floor(Math.random() * ALL_NOTES.length)];
+      const randomType = Math.random() < 0.5 ? 'm' : '';
+      progression.push(randomNote + randomType);
     }
-  } else {
-    // Get the scale notes for the selected mode
-    const scale = Scale.get(`${key} ${mode}`);
-    if (!scale.notes.length) return progression;
-
-    // Generate progression using the mode's chord types
-    const chordTypes = MODE_CHORD_TYPES[mode] || MODE_CHORD_TYPES.major;
-    
-    // Create array of available scale positions (0-6)
-    const availablePositions = Array.from({ length: scale.notes.length }, (_, i) => i);
-    
-    for (let i = 0; i < progressionLength; i++) {
-      // Randomly select a scale position
-      const randomIndex = Math.floor(Math.random() * availablePositions.length);
-      const scalePosition = availablePositions[randomIndex];
-      
-      const note = scale.notes[scalePosition];
-      const chordType = chordTypes[scalePosition];
-      progression.push(note + chordType);
-    }
+    return progression;
   }
 
+  // Get the scale notes for the given key and mode
+  const scale = Scale.get(`${key} ${mode}`);
+  const scaleNotes = scale.notes;
+
+  // Get the chord types for the current mode
+  const chordTypes = MODE_CHORD_TYPES[mode] || MODE_CHORD_TYPES.major;
+
+  // Create array of available scale positions (0-6)
+  const availablePositions = Array.from({ length: scaleNotes.length }, (_, i) => i);
+
+  // If startOnTonic is true, force the first chord to be the tonic
+  if (startOnTonic) {
+    const tonicChord = `${scaleNotes[0]}${chordTypes[0]}`;
+    const remainingLength = length - 1;
+    const remainingChords = [];
+    
+    // Generate remaining chords
+    for (let i = 0; i < remainingLength; i++) {
+      const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+      const note = scaleNotes[randomPosition];
+      const type = chordTypes[randomPosition];
+      remainingChords.push(note + type);
+    }
+    
+    return [tonicChord, ...remainingChords];
+  }
+
+  // Generate random progression
+  const progression = [];
+  for (let i = 0; i < length; i++) {
+    const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+    const note = scaleNotes[randomPosition];
+    const type = chordTypes[randomPosition];
+    progression.push(note + type);
+  }
   return progression;
 }

@@ -181,3 +181,21 @@ button:focus-visible {
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+}

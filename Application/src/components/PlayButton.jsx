@@ -11,6 +11,7 @@ function PlayButton() {
   const [selectedKey, setSelectedKey] = useState('C');
   const [selectedMode, setSelectedMode] = useState('major');
   const [selectedLength, setSelectedLength] = useState('4');
+  const [startOnTonic, setStartOnTonic] = useState(true);
 
   const playChord = async () => {
     try {
@@ -26,7 +27,7 @@ function PlayButton() {
         ? Math.floor(Math.random() * 8) + 1 
         : parseInt(selectedLength);
 
-      const progression = generateChordProgression(selectedKey, selectedMode, length);
+      const progression = generateChordProgression(selectedKey, selectedMode, length, startOnTonic);
       setCurrentProgression(progression);
       console.log('Generated Progression:', progression);
 
@@ -70,6 +71,15 @@ function PlayButton() {
           selectedLength={selectedLength}
           onLengthChange={setSelectedLength}
         />
+        <div className="checkbox-group">
+          <input
+            type="checkbox"
+            id="start-on-tonic"
+            checked={startOnTonic}
+            onChange={(e) => setStartOnTonic(e.target.checked)}
+          />
+          <label htmlFor="start-on-tonic">Always start on tonic</label>
+        </div>
       </div>
       <button onClick={playChord}>
         Generate & Play Progression
