@@ -131,6 +131,13 @@ button:focus-visible {
 .key-selector {
   margin: 1rem 0;
   display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.select-group {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
@@ -138,6 +145,7 @@ button:focus-visible {
 .key-selector label {
   font-size: 1rem;
   color: #666;
+  white-space: nowrap;
 }
 
 .key-selector select {
@@ -147,6 +155,7 @@ button:focus-visible {
   border: 1px solid #ccc;
   background-color: white;
   cursor: pointer;
+  min-width: 120px;
 }
 
 .key-selector select:hover {
