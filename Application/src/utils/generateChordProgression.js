@@ -1,4 +1,4 @@
-import { Scale, Chord } from 'tonal';
+import { Scale } from 'tonal';
 
 const ALL_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
@@ -20,7 +20,7 @@ export function generateChordProgression(key, mode, length, startOnTonic = true)
   // If no key is provided or mode is chromatic, generate random chromatic progression
   if (!key || mode === 'chromatic') {
     const progression = [];
-    const chordTypes = ['', 'm', 'dim', 'aug'];
+    const chordTypes = ['', 'm', 'dim', 'aug', 'M7', 'm7', '7', 'dim7'];
     
     for (let i = 0; i < length; i++) {
       const randomNote = ALL_NOTES[Math.floor(Math.random() * ALL_NOTES.length)];
