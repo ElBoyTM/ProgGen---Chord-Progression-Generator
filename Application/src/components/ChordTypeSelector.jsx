@@ -5,7 +5,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     simpleTriads: true,
     diminishedChords: false,
     augmentedChords: false,
-    seventhChords: true
+    seventhChords: true,
+    minorMajorSeventh: false
   });
 
   // Reset chord types when mode changes
@@ -14,7 +15,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       simpleTriads: true,
       diminishedChords: false,
       augmentedChords: false,
-      seventhChords: true
+      seventhChords: true,
+      minorMajorSeventh: false
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -67,6 +69,12 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
               label: 'Seventh Chords',
               description: 'Major 7, minor 7, and dominant 7 chords',
               enabled: selectedTypes.seventhChords
+            },
+            {
+              id: 'minorMajorSeventh',
+              label: 'Minor-Major 7th',
+              description: 'Minor chords with major 7th (e.g., CmM7)',
+              enabled: selectedTypes.minorMajorSeventh
             }
           ]
         };

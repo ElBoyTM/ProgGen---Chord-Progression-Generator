@@ -90,7 +90,10 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       allowedChords.push('aug7', 'maj7#5');
     }
     if (selectedChordTypes.seventhChords) {
-      allowedChords.push('7', 'm7', 'maj7', 'mM7');
+      allowedChords.push('7', 'm7', 'maj7');
+    }
+    if (selectedChordTypes.minorMajorSeventh) {
+      allowedChords.push('mM7');
     }
 
     // If no chord types are selected, default to all types
@@ -149,8 +152,12 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         return selectedChordTypes.augmentedChords;
       }
       // Basic seventh chords
-      if (type === '7' || type === 'm7' || type === 'maj7' || type === 'mM7') {
+      if (type === '7' || type === 'm7' || type === 'maj7') {
         return selectedChordTypes.seventhChords;
+      }
+      // Minor-major seventh chords
+      if (type === 'mM7') {
+        return selectedChordTypes.minorMajorSeventh;
       }
       return true;
     });
