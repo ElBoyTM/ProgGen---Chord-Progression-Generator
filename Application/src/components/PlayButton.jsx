@@ -4,7 +4,9 @@ import { useState, useRef } from 'react';
 import ChordDisplay from './ChordDisplay';
 import KeySelector from './KeySelector';
 import LengthSelector from './LengthSelector';
+import ChordTypeSelector from './ChordTypeSelector';
 import { Chord } from 'tonal';
+import '../styles/ChordTypeSelector.css';
 
 function PlayButton() {
   const [currentProgression, setCurrentProgression] = useState([]);
@@ -184,6 +186,7 @@ function PlayButton() {
         )}
       </div>
       <ChordDisplay progression={currentProgression} />
+      <ChordTypeSelector selectedMode={selectedMode} />
     </div>
   );
 }
