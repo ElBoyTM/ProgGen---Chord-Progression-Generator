@@ -78,10 +78,16 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       allowedChords.push('major', 'minor');
     }
     if (selectedChordTypes.diminishedChords) {
-      allowedChords.push('dim', 'dim7', 'm7b5');
+      if (selectedChordTypes.simpleTriads) {
+        allowedChords.push('dim');
+      }
+      allowedChords.push('dim7', 'm7b5');
     }
     if (selectedChordTypes.augmentedChords) {
-      allowedChords.push('aug', 'aug7', 'maj7#5');
+      if (selectedChordTypes.simpleTriads) {
+        allowedChords.push('aug');
+      }
+      allowedChords.push('aug7', 'maj7#5');
     }
     if (selectedChordTypes.seventhChords) {
       allowedChords.push('7', 'm7', 'maj7', 'mM7');
@@ -125,13 +131,21 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   // Filter chord types based on user selection
   const filterChordTypes = (types) => {
     return types.filter(type => {
+      // Handle triad types based on simpleTriads toggle
       if (type === 'major' || type === 'minor') {
         return selectedChordTypes.simpleTriads;
       }
-      if (type === 'dim' || type === 'dim7' || type === 'm7b5') {
+      if (type === 'dim') {
+        return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
+      }
+      if (type === 'aug') {
+        return selectedChordTypes.augmentedChords && selectedChordTypes.simpleTriads;
+      }
+      // Handle seventh chord variations
+      if (type === 'dim7' || type === 'm7b5') {
         return selectedChordTypes.diminishedChords;
       }
-      if (type === 'aug' || type === 'aug7' || type === 'maj7#5') {
+      if (type === 'aug7' || type === 'maj7#5') {
         return selectedChordTypes.augmentedChords;
       }
       // Basic seventh chords

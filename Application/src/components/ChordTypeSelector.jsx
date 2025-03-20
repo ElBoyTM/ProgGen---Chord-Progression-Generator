@@ -3,17 +3,23 @@ import { useState, useEffect } from 'react';
 function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
   const [selectedTypes, setSelectedTypes] = useState({
     simpleTriads: true,
-    diminishedChords: true,
-    augmentedChords: true,
+    diminishedChords: false,
+    augmentedChords: false,
     seventhChords: true
   });
 
   const handleToggle = (type) => {
     setSelectedTypes(prev => {
-      const newState = {
-        ...prev,
-        [type]: !prev[type]
-      };
+      const newState = { ...prev };
+      
+      if (type === 'simpleTriads') {
+        // When simpleTriads is toggled off, don't affect other toggles
+        newState.simpleTriads = !prev.simpleTriads;
+      } else {
+        // For other toggles, just toggle their state
+        newState[type] = !prev[type];
+      }
+      
       onChordTypesChange(newState);
       return newState;
     });
@@ -33,8 +39,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
           options: [
             {
               id: 'simpleTriads',
-              label: 'Simple Triads',
-              description: 'Major and minor triads',
+              label: 'Triads',
+              description: 'Major, minor, diminished, and augmented triads',
               enabled: selectedTypes.simpleTriads
             },
             {
