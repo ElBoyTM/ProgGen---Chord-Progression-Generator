@@ -8,6 +8,18 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     seventhChords: true
   });
 
+  // Reset chord types when mode changes
+  useEffect(() => {
+    const defaultTypes = {
+      simpleTriads: true,
+      diminishedChords: false,
+      augmentedChords: false,
+      seventhChords: true
+    };
+    setSelectedTypes(defaultTypes);
+    onChordTypesChange(defaultTypes);
+  }, [selectedMode]);
+
   const handleToggle = (type) => {
     setSelectedTypes(prev => {
       const newState = { ...prev };
@@ -24,11 +36,6 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       return newState;
     });
   };
-
-  // Notify parent of initial state
-  useEffect(() => {
-    onChordTypesChange(selectedTypes);
-  }, []);
 
   const getModeOptions = (mode) => {
     switch (mode) {
