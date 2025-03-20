@@ -1,18 +1,16 @@
 import { Scale, Chord } from 'tonal';
 
 const ALL_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const CHORD_TYPES = ['', 'm', 'dim', 'aug'];
 
 // Define chord types for each scale degree in different modes
 const MODE_CHORD_TYPES = {
-  major: ['', 'm', 'm', '', 'm', 'dim', '°'],
+  major: ['', 'm', 'm', '', '', 'm', 'dim'],
   minor: ['m', 'dim', '', 'm', 'm', '', ''],
-  dorian: ['m', 'm', '', 'm', 'dim', '', 'm'],
-  phrygian: ['m', '', 'm', 'm', 'm', 'dim', ''],
-  lydian: ['', '', 'm', 'dim', 'm', 'm', 'm'],
-  mixolydian: ['', 'm', 'dim', 'm', 'm', 'm', ''],
-  aeolian: ['m', 'dim', '', 'm', 'm', '', ''],
-  locrian: ['dim', '', 'm', 'm', 'm', '', 'm']
+  dorian: ['m', 'm', '', '', 'm', 'dim', ''],
+  phrygian: ['m', '', '', 'm', 'dim', '', 'm'],
+  lydian: ['', '', 'm', 'dim', '', 'm', 'm'],
+  mixolydian: ['', 'm', 'dim', '', 'm', 'm', ''],
+  locrian: ['dim', '', 'm', 'm', '', '', 'm']
 };
 
 export function generateChordProgression(key, mode, length, startOnTonic = true) {
