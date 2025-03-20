@@ -136,6 +136,7 @@ function PlayButton() {
             id="start-on-tonic"
             checked={startOnTonic}
             onChange={(e) => setStartOnTonic(e.target.checked)}
+            disabled={selectedMode === 'chromatic'}
           />
           <label htmlFor="start-on-tonic">Always start on tonic</label>
         </div>
