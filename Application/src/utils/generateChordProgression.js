@@ -4,16 +4,14 @@ const ALL_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', '
 
 // Define chord types for each scale degree in different modes
 const MODE_CHORD_TYPES = {
-  major: ['', 'm', 'm', '', '', 'm', 'dim'],
-  minor: ['m', 'dim', '', 'm', 'm', '', ''],
-  dorian: ['m', 'm', '', '', 'm', 'dim', ''],
-  phrygian: ['m', '', '', 'm', 'dim', '', 'm'],
-  lydian: ['', '', 'm', 'dim', '', 'm', 'm'],
-  mixolydian: ['', 'm', 'dim', '', 'm', 'm', ''],
-  locrian: ['dim', '', 'm', 'm', '', '', 'm'],
-  chromatic: Array(12).fill(['', 'm', 'dim', 'aug']).map(types => 
-    types[Math.floor(Math.random() * types.length)]
-  )
+  major: [['', 'M7'], ['m', 'm7'], ['m', 'm7'], ['', 'M7'], ['', '7'], ['m', 'm7'], ['dim', 'm7b5']],
+  minor: [['m', 'm7'], ['dim', 'm7b5'], ['', 'M7'], ['m', 'm7'], ['m', 'm7'], ['', 'M7'], ['', '7']],
+  dorian: [['m', 'm7'], ['m', 'm7'], ['', 'M7'], ['', '7'], ['m', 'm7'], ['dim', 'm7b5'], ['', 'M7']],
+  phrygian: [['m', 'm7'], ['', 'M7'], ['', '7'], ['m', 'm7'], ['dim', 'm7b5'], ['', 'M7'], ['m', 'm7']],
+  lydian: [['', 'M7'], ['', '7'], ['m', 'm7'], ['dim', 'm7b5'], ['', 'M7'], ['m', 'm7'], ['m', 'm7']],
+  mixolydian: [['', '7'], ['m', 'm7'], ['dim', 'm7b5'], ['', 'M7'], ['m', 'm7'], ['m', 'm7'], ['', 'M7']],
+  locrian: [['dim', 'm7b5'], ['', 'M7'], ['m', 'm7'], ['m', 'm7'], ['', 'M7'], ['', '7'], ['m', 'm7']],
+  chromatic: Array(12).fill(['', 'm', 'dim', 'aug', 'M7', 'm7', '7', 'dim7', 'm7b5', 'aug7', 'maj7#5', 'mM7'])
 };
 
 export function generateChordProgression(key, mode, length, startOnTonic = true) {
@@ -42,7 +40,8 @@ export function generateChordProgression(key, mode, length, startOnTonic = true)
 
   // If startOnTonic is true, force the first chord to be the tonic
   if (startOnTonic) {
-    const tonicChord = `${scaleNotes[0]}${chordTypes[0]}`;
+    const tonicChordOptions = chordTypes[0];
+    const tonicChord = `${scaleNotes[0]}${tonicChordOptions[Math.floor(Math.random() * tonicChordOptions.length)]}`;
     const remainingLength = length - 1;
     const remainingChords = [];
     
@@ -50,7 +49,8 @@ export function generateChordProgression(key, mode, length, startOnTonic = true)
     for (let i = 0; i < remainingLength; i++) {
       const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
       const note = scaleNotes[randomPosition];
-      const type = chordTypes[randomPosition];
+      const chordOptions = chordTypes[randomPosition];
+      const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
       remainingChords.push(note + type);
     }
     
@@ -62,7 +62,8 @@ export function generateChordProgression(key, mode, length, startOnTonic = true)
   for (let i = 0; i < length; i++) {
     const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
     const note = scaleNotes[randomPosition];
-    const type = chordTypes[randomPosition];
+    const chordOptions = chordTypes[randomPosition];
+    const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
     progression.push(note + type);
   }
   return progression;
