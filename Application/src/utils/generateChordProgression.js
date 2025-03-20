@@ -10,16 +10,21 @@ const MODE_CHORD_TYPES = {
   phrygian: ['m', '', '', 'm', 'dim', '', 'm'],
   lydian: ['', '', 'm', 'dim', '', 'm', 'm'],
   mixolydian: ['', 'm', 'dim', '', 'm', 'm', ''],
-  locrian: ['dim', '', 'm', 'm', '', '', 'm']
+  locrian: ['dim', '', 'm', 'm', '', '', 'm'],
+  chromatic: Array(12).fill(['', 'm', 'dim', 'aug']).map(types => 
+    types[Math.floor(Math.random() * types.length)]
+  )
 };
 
 export function generateChordProgression(key, mode, length, startOnTonic = true) {
-  // If no key is provided, generate random chromatic progression
-  if (!key) {
+  // If no key is provided or mode is chromatic, generate random chromatic progression
+  if (!key || mode === 'chromatic') {
     const progression = [];
+    const chordTypes = ['', 'm', 'dim', 'aug'];
+    
     for (let i = 0; i < length; i++) {
       const randomNote = ALL_NOTES[Math.floor(Math.random() * ALL_NOTES.length)];
-      const randomType = Math.random() < 0.5 ? 'm' : '';
+      const randomType = chordTypes[Math.floor(Math.random() * chordTypes.length)];
       progression.push(randomNote + randomType);
     }
     return progression;
