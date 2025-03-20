@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 import { generateChordProgression } from '../utils/generateChordProgression';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ChordDisplay from './ChordDisplay';
 import KeySelector from './KeySelector';
 import LengthSelector from './LengthSelector';
@@ -19,6 +19,32 @@ function PlayButton() {
   const [tempoInput, setTempoInput] = useState('60');
   const synthRef = useRef(null);
   const intervalRef = useRef(null);
+  const [selectedChordTypes, setSelectedChordTypes] = useState({
+    simpleTriads: true,
+    diminishedChords: true,
+    augmentedChords: true,
+    seventhChords: true
+  });
+
+  // Initialize Tone.js when component mounts
+  useEffect(() => {
+    const initAudio = async () => {
+      try {
+        await Tone.start();
+        // Create the synth immediately
+        synthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();
+        synthRef.current.volume.value = -10;
+      } catch (error) {
+        console.error('Error initializing audio:', error);
+      }
+    };
+
+    initAudio();
+  }, []);
+
+  const handleChordTypesChange = (newTypes) => {
+    setSelectedChordTypes(newTypes);
+  };
 
   const playChord = async () => {
     try {
@@ -36,7 +62,13 @@ function PlayButton() {
         ? Math.floor(Math.random() * 8) + 1 
         : parseInt(selectedLength);
 
-      const progression = generateChordProgression(selectedKey, selectedMode, length, startOnTonic);
+      const progression = generateChordProgression(
+        selectedKey, 
+        selectedMode, 
+        length, 
+        startOnTonic,
+        selectedChordTypes
+      );
       setCurrentProgression(progression);
       console.log('Generated Progression:', progression);
 
@@ -186,7 +218,10 @@ function PlayButton() {
         )}
       </div>
       <ChordDisplay progression={currentProgression} />
-      <ChordTypeSelector selectedMode={selectedMode} />
+      <ChordTypeSelector 
+        selectedMode={selectedMode} 
+        onChordTypesChange={handleChordTypesChange}
+      />
     </div>
   );
 }
