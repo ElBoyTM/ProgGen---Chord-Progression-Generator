@@ -29,6 +29,12 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       if (type === 'simpleTriads') {
         // When simpleTriads is toggled off, don't affect other toggles
         newState.simpleTriads = !prev.simpleTriads;
+      } else if (type === 'seventhChords') {
+        // When seventh chords are toggled off, also uncheck mM7
+        newState.seventhChords = !prev.seventhChords;
+        if (!newState.seventhChords) {
+          newState.minorMajorSeventh = false;
+        }
       } else {
         // For other toggles, just toggle their state
         newState[type] = !prev[type];
@@ -74,7 +80,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
               id: 'minorMajorSeventh',
               label: 'Minor-Major 7th',
               description: 'Minor chords with major 7th (e.g., CmM7)',
-              enabled: selectedTypes.minorMajorSeventh
+              enabled: selectedTypes.minorMajorSeventh,
+              disabled: !selectedTypes.seventhChords
             }
           ]
         };
@@ -109,6 +116,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                 id={option.id}
                 checked={option.enabled}
                 onChange={() => handleToggle(option.id)}
+                disabled={option.disabled}
               />
               <label htmlFor={option.id}>{option.label}</label>
             </div>
