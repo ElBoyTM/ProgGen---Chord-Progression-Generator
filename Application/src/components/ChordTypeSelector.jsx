@@ -46,57 +46,98 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
   };
 
   const getModeOptions = (mode) => {
+    const baseOptions = [
+      {
+        id: 'simpleTriads',
+        label: 'Triads',
+        description: 'Major, minor, diminished, and augmented triads',
+        enabled: selectedTypes.simpleTriads
+      },
+      {
+        id: 'diminishedChords',
+        label: 'Diminished Chords',
+        description: 'Diminished triads and seventh chords',
+        enabled: selectedTypes.diminishedChords
+      },
+      {
+        id: 'seventhChords',
+        label: 'Seventh Chords',
+        description: 'Major 7, minor 7, and dominant 7 chords',
+        enabled: selectedTypes.seventhChords
+      }
+    ];
+
+    const chromaticOptions = [
+      ...baseOptions,
+      {
+        id: 'augmentedChords',
+        label: 'Augmented Chords',
+        description: 'Augmented triads and seventh chords',
+        enabled: selectedTypes.augmentedChords
+      },
+      {
+        id: 'minorMajorSeventh',
+        label: 'Minor-Major 7th',
+        description: 'Minor chords with major 7th (e.g., CmM7)',
+        enabled: selectedTypes.minorMajorSeventh,
+        disabled: !selectedTypes.seventhChords
+      }
+    ];
+
     switch (mode) {
       case 'chromatic':
         return {
           name: 'Chromatic Mode',
           description: 'Select which types of chords to include in your progression',
-          options: [
-            {
-              id: 'simpleTriads',
-              label: 'Triads',
-              description: 'Major, minor, diminished, and augmented triads',
-              enabled: selectedTypes.simpleTriads
-            },
-            {
-              id: 'diminishedChords',
-              label: 'Diminished Chords',
-              description: 'Diminished triads and seventh chords',
-              enabled: selectedTypes.diminishedChords
-            },
-            {
-              id: 'augmentedChords',
-              label: 'Augmented Chords',
-              description: 'Augmented triads and seventh chords',
-              enabled: selectedTypes.augmentedChords
-            },
-            {
-              id: 'seventhChords',
-              label: 'Seventh Chords',
-              description: 'Major 7, minor 7, and dominant 7 chords',
-              enabled: selectedTypes.seventhChords
-            },
-            {
-              id: 'minorMajorSeventh',
-              label: 'Minor-Major 7th',
-              description: 'Minor chords with major 7th (e.g., CmM7)',
-              enabled: selectedTypes.minorMajorSeventh,
-              disabled: !selectedTypes.seventhChords
-            }
-          ]
+          options: chromaticOptions
         };
       case 'major':
         return {
           name: 'Major Mode',
           description: 'Select which types of chords to include in your progression',
-          options: [] // Will be filled in later
+          options: baseOptions
         };
-      // Add other modes as needed
+      case 'minor':
+        return {
+          name: 'Minor Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
+      case 'dorian':
+        return {
+          name: 'Dorian Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
+      case 'phrygian':
+        return {
+          name: 'Phrygian Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
+      case 'lydian':
+        return {
+          name: 'Lydian Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
+      case 'mixolydian':
+        return {
+          name: 'Mixolydian Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
+      case 'locrian':
+        return {
+          name: 'Locrian Mode',
+          description: 'Select which types of chords to include in your progression',
+          options: baseOptions
+        };
       default:
         return {
           name: `${mode.charAt(0).toUpperCase() + mode.slice(1)} Mode`,
           description: 'Select which types of chords to include in your progression',
-          options: [] // Will be filled in later
+          options: baseOptions
         };
     }
   };

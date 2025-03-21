@@ -129,7 +129,19 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   const chordTypes = MODE_CHORD_TYPES[mode] || MODE_CHORD_TYPES.major;
 
   // Create array of available scale positions (0-6)
-  const availablePositions = Array.from({ length: scaleNotes.length }, (_, i) => i);
+  // Filter out positions that would result in diminished chords when diminished toggle is off
+  const availablePositions = Array.from({ length: scaleNotes.length }, (_, i) => i).filter(pos => {
+    if (!selectedChordTypes.diminishedChords) {
+      // Check if this position has any diminished chord types
+      return !chordTypes[pos].some(type => type === 'dim' || type === 'dim7' || type === 'm7b5');
+    }
+    return true;
+  });
+
+  // If no positions are available after filtering, add back all positions
+  if (availablePositions.length === 0) {
+    availablePositions.push(...Array.from({ length: scaleNotes.length }, (_, i) => i));
+  }
 
   // Filter chord types based on user selection
   const filterChordTypes = (types) => {
@@ -139,16 +151,20 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         return selectedChordTypes.simpleTriads;
       }
       if (type === 'dim') {
+        // For diminished triads, require both toggles to be on
         return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
       }
       if (type === 'aug') {
+        // For augmented triads, require both toggles to be on
         return selectedChordTypes.augmentedChords && selectedChordTypes.simpleTriads;
       }
       // Handle seventh chord variations
       if (type === 'dim7' || type === 'm7b5') {
+        // For diminished seventh chords, only require diminished toggle
         return selectedChordTypes.diminishedChords;
       }
       if (type === 'aug7' || type === 'maj7#5') {
+        // For augmented seventh chords, only require augmented toggle
         return selectedChordTypes.augmentedChords;
       }
       // Basic seventh chords
@@ -197,8 +213,9 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
     const note = scaleNotes[randomPosition];
     const chordOptions = filterChordTypes(chordTypes[randomPosition]);
     if (chordOptions.length === 0) {
-      // If no chord types are allowed for this position, use the first available type
-      chordOptions.push(chordTypes[randomPosition][0]);
+      // If no chord types are allowed for this position, try a different position
+      i--;
+      continue;
     }
     const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
     progression.push(note + type);
