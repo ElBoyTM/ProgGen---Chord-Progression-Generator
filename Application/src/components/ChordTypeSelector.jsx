@@ -6,7 +6,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     diminishedChords: false,
     augmentedChords: false,
     seventhChords: true,
-    minorMajorSeventh: false
+    minorMajorSeventh: false,
+    dominantSeventh: false
   });
 
   // Reset chord types when mode changes
@@ -16,7 +17,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       diminishedChords: false,
       augmentedChords: false,
       seventhChords: true,
-      minorMajorSeventh: false
+      minorMajorSeventh: false,
+      dominantSeventh: false
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -34,6 +36,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         newState.seventhChords = !prev.seventhChords;
         if (!newState.seventhChords) {
           newState.minorMajorSeventh = false;
+          newState.dominantSeventh = false;
         }
       } else {
         // For other toggles, just toggle their state
@@ -50,20 +53,35 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'simpleTriads',
         label: 'Triads',
-        description: 'Major, minor, diminished, and augmented triads',
-        enabled: selectedTypes.simpleTriads
+        description: 'Basic major and minor triads',
+        enabled: selectedTypes.simpleTriads,
+        disabled: false
       },
       {
         id: 'diminishedChords',
         label: 'Diminished Chords',
         description: 'Diminished triads and seventh chords',
-        enabled: selectedTypes.diminishedChords
+        enabled: selectedTypes.diminishedChords,
+        disabled: false
       },
       {
         id: 'seventhChords',
         label: 'Seventh Chords',
-        description: 'Major 7, minor 7, and dominant 7 chords',
-        enabled: selectedTypes.seventhChords
+        description: 'Major 7th, minor 7th, and dominant 7th chords',
+        enabled: selectedTypes.seventhChords,
+        disabled: false
+      }
+    ];
+
+    // Add dominant 7th toggle only for major mode
+    const majorOptions = [
+      ...baseOptions,
+      {
+        id: 'dominantSeventh',
+        label: 'Dominant 7th Only',
+        description: 'Allow dominant 7th chords (e.g., C7)',
+        enabled: selectedTypes.dominantSeventh,
+        disabled: selectedTypes.seventhChords
       }
     ];
 
@@ -73,7 +91,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         id: 'augmentedChords',
         label: 'Augmented Chords',
         description: 'Augmented triads and seventh chords',
-        enabled: selectedTypes.augmentedChords
+        enabled: selectedTypes.augmentedChords,
+        disabled: false
       },
       {
         id: 'minorMajorSeventh',
@@ -95,7 +114,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         return {
           name: 'Major Mode',
           description: 'Select which types of chords to include in your progression',
-          options: baseOptions
+          options: majorOptions
         };
       case 'minor':
         return {

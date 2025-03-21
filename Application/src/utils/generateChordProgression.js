@@ -168,7 +168,12 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         return selectedChordTypes.augmentedChords;
       }
       // Basic seventh chords
-      if (type === '7' || type === 'm7' || type === 'maj7') {
+      if (type === '7') {
+        // Dominant 7th can be enabled by either seventhChords or dominantSeventh
+        return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
+      }
+      if (type === 'm7' || type === 'maj7') {
+        // Other seventh chords only enabled by seventhChords
         return selectedChordTypes.seventhChords;
       }
       // Minor-major seventh chords
