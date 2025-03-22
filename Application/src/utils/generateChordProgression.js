@@ -7,7 +7,7 @@ const MODE_CHORD_TYPES = {
     ['major', 'maj7'], // I
     ['minor', 'm7'],   // ii
     ['minor', 'm7'],   // iii
-    ['major', 'maj7'], // IV
+    ['major', 'minor', 'maj7', 'mM7'], // IV (can be major or minor)
     ['major', '7'],    // V
     ['minor', 'm7'],   // vi
     ['dim', 'm7b5']    // vii°
@@ -144,10 +144,20 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   }
 
   // Filter chord types based on user selection
-  const filterChordTypes = (types) => {
+  const filterChordTypes = (types, position) => {
     return types.filter(type => {
       // Handle triad types based on simpleTriads toggle
       if (type === 'major' || type === 'minor') {
+        // Special handling for IV/iv in major mode
+        if (mode === 'major' && position === 3) { // IV is at position 3
+          if (selectedChordTypes.borrowedChordType === 'major') {
+            return type === 'major' && selectedChordTypes.simpleTriads;
+          } else if (selectedChordTypes.borrowedChordType === 'minor') {
+            return type === 'minor' && selectedChordTypes.simpleTriads;
+          } else { // 'both'
+            return selectedChordTypes.simpleTriads;
+          }
+        }
         return selectedChordTypes.simpleTriads;
       }
       if (type === 'dim') {
@@ -172,13 +182,24 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         // Dominant 7th can be enabled by either seventhChords or dominantSeventh
         return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
       }
-      if (type === 'm7' || type === 'maj7') {
-        // Other seventh chords only enabled by seventhChords
-        return selectedChordTypes.seventhChords;
+      // Special handling for seventh chords in IV position in major mode
+      if (mode === 'major' && position === 3) { // IV is at position 3
+        if (selectedChordTypes.borrowedChordType === 'major') {
+          return type === 'maj7' && selectedChordTypes.seventhChords;
+        } else if (selectedChordTypes.borrowedChordType === 'minor') {
+          return type === 'mM7' && selectedChordTypes.seventhChords;
+        } else { // 'both'
+          return (type === 'maj7' && selectedChordTypes.seventhChords) || 
+                 (type === 'mM7' && selectedChordTypes.seventhChords);
+        }
       }
       // Minor-major seventh chords
       if (type === 'mM7') {
-        return selectedChordTypes.minorMajorSeventh;
+        return selectedChordTypes.seventhChords;
+      }
+      // Other seventh chords
+      if (type === 'm7' || type === 'maj7') {
+        return selectedChordTypes.seventhChords;
       }
       return true;
     });
@@ -186,7 +207,7 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
 
   // If startOnTonic is true, force the first chord to be the tonic
   if (startOnTonic) {
-    const tonicChordOptions = filterChordTypes(chordTypes[0]);
+    const tonicChordOptions = filterChordTypes(chordTypes[0], 0);
     if (tonicChordOptions.length === 0) {
       // If no chord types are allowed for tonic, use the first available type
       tonicChordOptions.push(chordTypes[0][0]);
@@ -199,10 +220,11 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
     for (let i = 0; i < remainingLength; i++) {
       const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
       const note = scaleNotes[randomPosition];
-      const chordOptions = filterChordTypes(chordTypes[randomPosition]);
+      const chordOptions = filterChordTypes(chordTypes[randomPosition], randomPosition);
       if (chordOptions.length === 0) {
-        // If no chord types are allowed for this position, use the first available type
-        chordOptions.push(chordTypes[randomPosition][0]);
+        // If no chord types are allowed for this position, try a different position
+        i--;
+        continue;
       }
       const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
       remainingChords.push(note + type);
@@ -216,7 +238,7 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   for (let i = 0; i < length; i++) {
     const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
     const note = scaleNotes[randomPosition];
-    const chordOptions = filterChordTypes(chordTypes[randomPosition]);
+    const chordOptions = filterChordTypes(chordTypes[randomPosition], randomPosition);
     if (chordOptions.length === 0) {
       // If no chord types are allowed for this position, try a different position
       i--;
@@ -228,3 +250,4 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
 
   return progression;
 }
+

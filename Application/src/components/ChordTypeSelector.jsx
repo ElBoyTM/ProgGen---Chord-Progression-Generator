@@ -7,7 +7,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     augmentedChords: false,
     seventhChords: true,
     minorMajorSeventh: false,
-    dominantSeventh: false
+    dominantSeventh: false,
+    borrowedChordType: 'major' // 'major', 'both', or 'minor'
   });
 
   // Reset chord types when mode changes
@@ -18,7 +19,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       augmentedChords: false,
       seventhChords: true,
       minorMajorSeventh: false,
-      dominantSeventh: false
+      dominantSeventh: false,
+      borrowedChordType: 'major'
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -43,6 +45,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         newState[type] = !prev[type];
       }
       
+      onChordTypesChange(newState);
+      return newState;
+    });
+  };
+
+  const handleBorrowedChordChange = (value) => {
+    setSelectedTypes(prev => {
+      const newState = { ...prev, borrowedChordType: value };
       onChordTypesChange(newState);
       return newState;
     });
@@ -82,6 +92,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         description: 'Allow dominant 7th chords (e.g., C7)',
         enabled: selectedTypes.dominantSeventh,
         disabled: selectedTypes.seventhChords
+      },
+      {
+        id: 'borrowedChordSelector',
+        type: 'borrowedChord',
+        label: 'Borrowed Chords',
+        description: 'Choose whether to use major IV, minor iv, or both',
+        value: selectedTypes.borrowedChordType,
+        onChange: handleBorrowedChordChange
       }
     ];
 
@@ -170,17 +188,60 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       <div className="options-container">
         {modeOptions.options.map(option => (
           <div key={option.id} className="option-item">
-            <div className="option-header">
-              <input
-                type="checkbox"
-                id={option.id}
-                checked={option.enabled}
-                onChange={() => handleToggle(option.id)}
-                disabled={option.disabled}
-              />
-              <label htmlFor={option.id}>{option.label}</label>
-            </div>
-            <p className="option-description">{option.description}</p>
+            {option.type === 'borrowedChord' ? (
+              <div className="borrowed-chord-selector">
+                <div className="option-header">
+                  <label>{option.label}</label>
+                </div>
+                <p className="option-description">{option.description}</p>
+                <div className="borrowed-chord-options">
+                  <label>
+                    <input
+                      type="radio"
+                      name="borrowedChord"
+                      value="major"
+                      checked={option.value === 'major'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Major IV
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="borrowedChord"
+                      value="both"
+                      checked={option.value === 'both'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Both
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="borrowedChord"
+                      value="minor"
+                      checked={option.value === 'minor'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Minor iv
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="option-header">
+                  <input
+                    type="checkbox"
+                    id={option.id}
+                    checked={option.enabled}
+                    onChange={() => handleToggle(option.id)}
+                    disabled={option.disabled}
+                  />
+                  <label htmlFor={option.id}>{option.label}</label>
+                </div>
+                <p className="option-description">{option.description}</p>
+              </>
+            )}
           </div>
         ))}
       </div>
