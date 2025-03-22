@@ -8,7 +8,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     seventhChords: true,
     minorMajorSeventh: false,
     dominantSeventh: false,
-    borrowedChordType: 'major' // 'major', 'both', or 'minor'
+    borrowedChordType: 'major', // 'major', 'both', or 'minor'
+    leadingToneType: 'diminished' // 'diminished' or 'flat7'
   });
 
   // Reset chord types when mode changes
@@ -20,7 +21,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       seventhChords: true,
       minorMajorSeventh: false,
       dominantSeventh: false,
-      borrowedChordType: 'major'
+      borrowedChordType: 'major',
+      leadingToneType: 'diminished'
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -53,6 +55,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
   const handleBorrowedChordChange = (value) => {
     setSelectedTypes(prev => {
       const newState = { ...prev, borrowedChordType: value };
+      onChordTypesChange(newState);
+      return newState;
+    });
+  };
+
+  const handleLeadingToneChange = (value) => {
+    setSelectedTypes(prev => {
+      const newState = { ...prev, leadingToneType: value };
       onChordTypesChange(newState);
       return newState;
     });
@@ -100,6 +110,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         description: 'Choose whether to use major IV, minor iv, or both',
         value: selectedTypes.borrowedChordType,
         onChange: handleBorrowedChordChange
+      },
+      {
+        id: 'leadingToneSelector',
+        type: 'leadingTone',
+        label: 'Leading Tone',
+        description: 'Choose whether to use diminished vii° or flat bVII',
+        value: selectedTypes.leadingToneType,
+        onChange: handleLeadingToneChange
       }
     ];
 
@@ -224,6 +242,35 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Minor iv
+                  </label>
+                </div>
+              </div>
+            ) : option.type === 'leadingTone' ? (
+              <div className="borrowed-chord-selector">
+                <div className="option-header">
+                  <label>{option.label}</label>
+                </div>
+                <p className="option-description">{option.description}</p>
+                <div className="borrowed-chord-options">
+                  <label>
+                    <input
+                      type="radio"
+                      name="leadingTone"
+                      value="diminished"
+                      checked={option.value === 'diminished'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Diminished vii°
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="leadingTone"
+                      value="flat7"
+                      checked={option.value === 'flat7'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Flat bVII
                   </label>
                 </div>
               </div>
