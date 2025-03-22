@@ -78,7 +78,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       ...baseOptions,
       {
         id: 'dominantSeventh',
-        label: 'Dominant 7th Only',
+        label: 'Dominant 7th',
         description: 'Allow dominant 7th chords (e.g., C7)',
         enabled: selectedTypes.dominantSeventh,
         disabled: selectedTypes.seventhChords
