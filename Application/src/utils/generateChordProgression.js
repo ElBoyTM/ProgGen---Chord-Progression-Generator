@@ -150,7 +150,41 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         // For bVII, we need to lower the root note by a semitone
         const currentNote = scaleNotes[position];
         const currentIndex = ALL_NOTES.indexOf(currentNote);
-        return ALL_NOTES[(currentIndex - 1 + 12) % 12];
+        const loweredNote = ALL_NOTES[(currentIndex - 1 + 12) % 12];
+        
+        // Handle enharmonic equivalents based on key signature
+        const isSharpKey = key.includes('#');
+        
+        // Special handling for F# major
+        if (key === 'F#') {
+          // In F# major, E# becomes E for bVII
+          if (currentNote === 'E#') {
+            return 'E';
+          }
+        }
+        
+        // Handle other enharmonic equivalents
+        if (isSharpKey) {
+          // In sharp keys, prefer sharp notes
+          const sharpMap = {
+            'Bb': 'A#',
+            'Db': 'C#',
+            'Eb': 'D#',
+            'Gb': 'F#',
+            'Ab': 'G#'
+          };
+          return sharpMap[loweredNote] || loweredNote;
+        } else {
+          // In flat keys or natural keys, prefer flat notes
+          const flatMap = {
+            'A#': 'Bb',
+            'C#': 'Db',
+            'D#': 'Eb',
+            'F#': 'Gb',
+            'G#': 'Ab'
+          };
+          return flatMap[loweredNote] || loweredNote;
+        }
       }
     }
     return scaleNotes[position];
@@ -161,6 +195,10 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
     return types.filter(type => {
       // Handle triad types based on simpleTriads toggle
       if (type === 'major' || type === 'minor') {
+        // Special handling for III in major mode - must be minor
+        if (mode === 'major' && position === 2) { // III is at position 2
+          return type === 'minor' && selectedChordTypes.simpleTriads;
+        }
         // Special handling for IV/iv in major mode
         if (mode === 'major' && position === 3) { // IV is at position 3
           if (selectedChordTypes.borrowedChordType === 'major') {
@@ -175,7 +213,9 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         if (mode === 'major' && position === 6) { // vii is at position 6
           if (selectedChordTypes.leadingToneType === 'diminished') {
             return false; // Don't allow major/minor when using diminished
-          } else { // 'flat7'
+          } else if (selectedChordTypes.leadingToneType === 'flat7') {
+            return type === 'major' && selectedChordTypes.simpleTriads;
+          } else { // 'both'
             return type === 'major' && selectedChordTypes.simpleTriads;
           }
         }
