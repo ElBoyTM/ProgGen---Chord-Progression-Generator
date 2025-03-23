@@ -132,6 +132,10 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   // Filter out positions that would result in diminished chords when diminished toggle is off
   const availablePositions = Array.from({ length: scaleNotes.length }, (_, i) => i).filter(pos => {
     if (!selectedChordTypes.diminishedChords) {
+      // Special handling for vii position in major mode when using bVII
+      if (mode === 'major' && pos === 6 && selectedChordTypes.leadingToneType === 'flat7') {
+        return true; // Always allow vii position when using bVII
+      }
       // Check if this position has any diminished chord types
       return !chordTypes[pos].some(type => type === 'dim' || type === 'dim7' || type === 'm7b5');
     }
@@ -226,7 +230,8 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         if (mode === 'major' && position === 6) { // vii position
           return selectedChordTypes.diminishedChords && 
                  selectedChordTypes.simpleTriads && 
-                 selectedChordTypes.leadingToneType === 'diminished';
+                 (selectedChordTypes.leadingToneType === 'diminished' || 
+                  selectedChordTypes.leadingToneType === 'both');
         }
         return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
       }
@@ -236,12 +241,14 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       }
       // Handle seventh chord variations
       if (type === 'dim7' || type === 'm7b5') {
-        // For diminished seventh chords, only require diminished toggle
+        // For diminished seventh chords, require both diminished and seventh toggles
         if (mode === 'major' && position === 6) { // vii position
           return selectedChordTypes.diminishedChords && 
-                 selectedChordTypes.leadingToneType === 'diminished';
+                 selectedChordTypes.seventhChords && 
+                 (selectedChordTypes.leadingToneType === 'diminished' || 
+                  selectedChordTypes.leadingToneType === 'both');
         }
-        return selectedChordTypes.diminishedChords;
+        return selectedChordTypes.diminishedChords && selectedChordTypes.seventhChords;
       }
       if (type === 'aug7' || type === 'maj7#5') {
         // For augmented seventh chords, only require augmented toggle
