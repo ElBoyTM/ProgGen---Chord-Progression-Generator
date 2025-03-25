@@ -272,6 +272,16 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                     />
                     Flat bVII
                   </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="leadingTone"
+                      value="both"
+                      checked={option.value === 'both'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Both
+                  </label>
                 </div>
               </div>
             ) : (
