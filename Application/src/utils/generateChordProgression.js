@@ -219,9 +219,8 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
             return false; // Don't allow major/minor when using diminished
           } else if (selectedChordTypes.leadingToneType === 'flat7') {
             return type === 'major' && selectedChordTypes.simpleTriads;
-          } else { // 'both'
-            return type === 'major' && selectedChordTypes.simpleTriads;
           }
+          return false; // Default to not allowing major/minor for vii
         }
         return selectedChordTypes.simpleTriads;
       }
@@ -260,9 +259,10 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         if (mode === 'major' && position === 6) {
           if (selectedChordTypes.leadingToneType === 'diminished') {
             return false; // Don't allow dominant 7th when using diminished
-          } else { // 'flat7'
+          } else if (selectedChordTypes.leadingToneType === 'flat7') {
             return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
           }
+          return false; // Default to not allowing dominant 7th for vii
         }
         // Dominant 7th can be enabled by either seventhChords or dominantSeventh
         return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
@@ -282,8 +282,30 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       if (type === 'mM7') {
         return selectedChordTypes.seventhChords;
       }
-      // Other seventh chords
-      if (type === 'm7' || type === 'maj7') {
+      // Other seventh chords (maj7)
+      if (type === 'maj7') {
+        // Special handling for vii/bVII in major mode
+        if (mode === 'major' && position === 6) {
+          if (selectedChordTypes.leadingToneType === 'diminished') {
+            return false; // Don't allow maj7 when using diminished
+          } else if (selectedChordTypes.leadingToneType === 'flat7') {
+            return selectedChordTypes.seventhChords;
+          }
+          return false; // Default to not allowing maj7 for vii
+        }
+        return selectedChordTypes.seventhChords;
+      }
+      // Handle m7 chords
+      if (type === 'm7') {
+        // Special handling for vii/bVII in major mode
+        if (mode === 'major' && position === 6) {
+          if (selectedChordTypes.leadingToneType === 'diminished') {
+            return false; // Don't allow m7 when using diminished
+          } else if (selectedChordTypes.leadingToneType === 'flat7') {
+            return selectedChordTypes.seventhChords;
+          }
+          return false; // Default to not allowing m7 for vii
+        }
         return selectedChordTypes.seventhChords;
       }
       return true;
