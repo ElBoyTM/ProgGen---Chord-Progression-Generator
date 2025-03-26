@@ -17,7 +17,7 @@ const MODE_CHORD_TYPES = {
     ['dim', 'm7b5'],   // ii°
     ['major', 'maj7'], // III
     ['minor', 'm7'],   // iv
-    ['major', 'minor', '7', 'm7'],   // V or v
+    ['minor', 'major', '7', 'm7'],   // v or V
     ['major', 'maj7'], // VI
     ['major', '7']     // VII
   ],
@@ -323,6 +323,14 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           }
           return false;
         }
+        // Special handling for v/V in minor mode
+        if (mode === 'minor' && position === 4) {
+          if (selectedChordTypes.minorDominantType === 'major') {
+            return selectedChordTypes.seventhChords;
+          } else {
+            return false; // Never allow dominant 7th in minor v position
+          }
+        }
         // Dominant 7th can be enabled by either seventhChords or dominantSeventh
         return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
       }
@@ -350,6 +358,14 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           }
           return false;
         }
+        // Special handling for v/V in minor mode
+        if (mode === 'minor' && position === 4) {
+          if (selectedChordTypes.minorDominantType === 'major') {
+            return selectedChordTypes.seventhChords;
+          } else {
+            return false;
+          }
+        }
         return selectedChordTypes.seventhChords;
       }
       // Handle m7 chords
@@ -360,6 +376,14 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
             return selectedChordTypes.seventhChords;
           }
           return false;
+        }
+        // Special handling for v/V in minor mode
+        if (mode === 'minor' && position === 4) {
+          if (selectedChordTypes.minorDominantType === 'major') {
+            return false;
+          } else {
+            return selectedChordTypes.seventhChords;
+          }
         }
         return selectedChordTypes.seventhChords;
       }
@@ -404,8 +428,13 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
     
     // Special handling for major V in minor mode
     if (mode === 'minor' && randomPosition === 4 && selectedChordTypes.minorDominantType === 'major') {
-      const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
-      progression.push(note + type);
+      if (selectedChordTypes.simpleTriads) {
+        progression.push(note + 'major');
+      } else if (selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh) {
+        progression.push(note + '7');
+      } else {
+        progression.push(note + 'major');
+      }
     } else {
       if (chordOptions.length === 0) {
         // If no chord types are allowed for this position, try a different position
