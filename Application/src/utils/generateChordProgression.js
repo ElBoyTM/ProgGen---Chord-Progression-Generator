@@ -212,6 +212,38 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       }
     }
 
+    // Handle seventh scale degree in minor mode
+    if (mode === 'minor' && position === 6) { // VII position
+      const currentNote = scaleNotes[position];
+      const currentIndex = ALL_NOTES.indexOf(currentNote);
+      const loweredNote = ALL_NOTES[(currentIndex - 1 + 12) % 12];
+      
+      // Handle enharmonic equivalents based on key signature
+      const isSharpKey = key.includes('#');
+      
+      if (isSharpKey) {
+        // In sharp keys, prefer sharp notes
+        const sharpMap = {
+          'Bb': 'A#',
+          'Db': 'C#',
+          'Eb': 'D#',
+          'Gb': 'F#',
+          'Ab': 'G#'
+        };
+        return sharpMap[loweredNote] || loweredNote;
+      } else {
+        // In flat keys or natural keys, prefer flat notes
+        const flatMap = {
+          'A#': 'Bb',
+          'C#': 'Db',
+          'D#': 'Eb',
+          'F#': 'Gb',
+          'G#': 'Ab'
+        };
+        return flatMap[loweredNote] || loweredNote;
+      }
+    }
+
     return scaleNotes[position];
   };
 
