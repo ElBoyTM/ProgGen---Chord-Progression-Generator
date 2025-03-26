@@ -10,7 +10,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     dominantSeventh: false,
     borrowedChordType: 'major', // 'major', 'both', or 'minor'
     leadingToneType: 'diminished', // 'diminished' or 'flat7'
-    minorDominantType: 'minor' // 'minor' or 'major'
+    minorDominantType: 'minor' // 'minor', 'major', or 'both'
   });
 
   // Reset chord types when mode changes
@@ -155,7 +155,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         id: 'minorDominantSelector',
         type: 'minorDominant',
         label: 'Dominant Chord',
-        description: 'Choose whether to use minor v or major V',
+        description: 'Choose whether to use minor v, major V, or both',
         value: selectedTypes.minorDominantType,
         onChange: handleMinorDominantChange
       }
@@ -332,6 +332,16 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Major V
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorDominant"
+                      value="both"
+                      checked={option.value === 'both'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Both
                   </label>
                 </div>
               </div>
