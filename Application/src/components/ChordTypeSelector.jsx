@@ -10,7 +10,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     dominantSeventh: false,
     borrowedChordType: 'major', // 'major', 'both', or 'minor'
     leadingToneType: 'diminished', // 'diminished' or 'flat7'
-    minorDominantType: 'minor' // 'minor', 'major', or 'both'
+    minorDominantType: 'minor', // 'minor', 'major', or 'both'
+    minorSeventhType: 'flat7' // 'flat7', 'diminished', or 'both'
   });
 
   // Reset chord types when mode changes
@@ -24,7 +25,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       dominantSeventh: false,
       borrowedChordType: 'major',
       leadingToneType: 'diminished',
-      minorDominantType: 'minor'
+      minorDominantType: 'minor',
+      minorSeventhType: 'flat7'
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -73,6 +75,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
   const handleMinorDominantChange = (value) => {
     setSelectedTypes(prev => {
       const newState = { ...prev, minorDominantType: value };
+      onChordTypesChange(newState);
+      return newState;
+    });
+  };
+
+  const handleMinorSeventhChange = (value) => {
+    setSelectedTypes(prev => {
+      const newState = { ...prev, minorSeventhType: value };
       onChordTypesChange(newState);
       return newState;
     });
@@ -158,6 +168,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         description: 'Choose whether to use minor v, major V, or both',
         value: selectedTypes.minorDominantType,
         onChange: handleMinorDominantChange
+      },
+      {
+        id: 'minorSeventhSelector',
+        type: 'minorSeventh',
+        label: 'Seventh Scale Degree',
+        description: 'Choose whether to use flat VII or diminished vii°',
+        value: selectedTypes.minorSeventhType,
+        onChange: handleMinorSeventhChange
       }
     ];
 
@@ -337,6 +355,45 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                     <input
                       type="radio"
                       name="minorDominant"
+                      value="both"
+                      checked={option.value === 'both'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Both
+                  </label>
+                </div>
+              </div>
+            ) : option.type === 'minorSeventh' ? (
+              <div className="borrowed-chord-selector">
+                <div className="option-header">
+                  <label>{option.label}</label>
+                </div>
+                <p className="option-description">{option.description}</p>
+                <div className="borrowed-chord-options">
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorSeventh"
+                      value="flat7"
+                      checked={option.value === 'flat7'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Flat VII
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorSeventh"
+                      value="diminished"
+                      checked={option.value === 'diminished'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Diminished vii°
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorSeventh"
                       value="both"
                       checked={option.value === 'both'}
                       onChange={(e) => option.onChange(e.target.value)}

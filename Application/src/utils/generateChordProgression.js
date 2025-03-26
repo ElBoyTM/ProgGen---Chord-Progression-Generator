@@ -19,7 +19,7 @@ const MODE_CHORD_TYPES = {
     ['minor', 'm7'],   // iv
     ['minor', 'major', '7', 'm7'],   // v or V
     ['major', 'maj7'], // VI
-    ['major', '7']     // VII
+    ['major', '7', 'dim', 'dim7']     // VII or vii°
   ],
   dorian: [
     ['minor', 'm7'],   // i
@@ -125,8 +125,11 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
   const scale = Scale.get(`${key} ${mode}`);
   let scaleNotes = scale.notes;
 
-  // If we're in minor mode and major V is selected, use harmonic minor scale
-  if (mode === 'minor' && (selectedChordTypes.minorDominantType === 'major' || selectedChordTypes.minorDominantType === 'both')) {
+  // If we're in minor mode and either major V or diminished vii° is selected, use harmonic minor scale
+  if (mode === 'minor' && (
+    (selectedChordTypes.minorDominantType === 'major' || selectedChordTypes.minorDominantType === 'both') ||
+    (selectedChordTypes.minorSeventhType === 'diminished' || selectedChordTypes.minorSeventhType === 'both')
+  )) {
     const harmonicMinor = Scale.get(`${key} harmonic minor`);
     scaleNotes = harmonicMinor.notes;
   }
@@ -141,6 +144,14 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       // Special handling for vii position in major mode when using bVII
       if (mode === 'major' && pos === 6 && selectedChordTypes.leadingToneType === 'flat7') {
         return true; // Always allow vii position when using bVII
+      }
+      // Special handling for VII position in minor mode
+      if (mode === 'minor' && pos === 6) {
+        if (selectedChordTypes.minorSeventhType === 'flat7') {
+          return true; // Always allow VII position when using flat7
+        }
+        // For diminished or both, only allow if diminishedChords is enabled
+        return selectedChordTypes.diminishedChords;
       }
       // Check if this position has any diminished chord types
       return !chordTypes[pos].some(type => type === 'dim' || type === 'dim7' || type === 'm7b5');
@@ -221,26 +232,61 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       // Handle enharmonic equivalents based on key signature
       const isSharpKey = key.includes('#');
       
-      if (isSharpKey) {
-        // In sharp keys, prefer sharp notes
-        const sharpMap = {
-          'Bb': 'A#',
-          'Db': 'C#',
-          'Eb': 'D#',
-          'Gb': 'F#',
-          'Ab': 'G#'
-        };
-        return sharpMap[loweredNote] || loweredNote;
-      } else {
-        // In flat keys or natural keys, prefer flat notes
-        const flatMap = {
-          'A#': 'Bb',
-          'C#': 'Db',
-          'D#': 'Eb',
-          'F#': 'Gb',
-          'G#': 'Ab'
-        };
-        return flatMap[loweredNote] || loweredNote;
+      if (selectedChordTypes.minorSeventhType === 'flat7') {
+        // For flat VII, lower the note
+        if (isSharpKey) {
+          // In sharp keys, prefer sharp notes
+          const sharpMap = {
+            'Bb': 'A#',
+            'Db': 'C#',
+            'Eb': 'D#',
+            'Gb': 'F#',
+            'Ab': 'G#'
+          };
+          return sharpMap[loweredNote] || loweredNote;
+        } else {
+          // In flat keys or natural keys, prefer flat notes
+          const flatMap = {
+            'A#': 'Bb',
+            'C#': 'Db',
+            'D#': 'Eb',
+            'F#': 'Gb',
+            'G#': 'Ab'
+          };
+          return flatMap[loweredNote] || loweredNote;
+        }
+      } else if (selectedChordTypes.minorSeventhType === 'diminished') {
+        // For diminished vii°, use the natural seventh degree
+        return currentNote;
+      } else { // 'both'
+        // Randomly choose between flat VII and natural vii°
+        if (Math.random() < 0.5) {
+          // For diminished vii°, use the natural seventh degree
+          return currentNote;
+        } else {
+          // For flat VII, lower the note
+          if (isSharpKey) {
+            // In sharp keys, prefer sharp notes
+            const sharpMap = {
+              'Bb': 'A#',
+              'Db': 'C#',
+              'Eb': 'D#',
+              'Gb': 'F#',
+              'Ab': 'G#'
+            };
+            return sharpMap[loweredNote] || loweredNote;
+          } else {
+            // In flat keys or natural keys, prefer flat notes
+            const flatMap = {
+              'A#': 'Bb',
+              'C#': 'Db',
+              'D#': 'Eb',
+              'F#': 'Gb',
+              'G#': 'Ab'
+            };
+            return flatMap[loweredNote] || loweredNote;
+          }
+        }
       }
     }
 
@@ -287,6 +333,16 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           }
           return false;
         }
+        // Special handling for VII/vii° in minor mode
+        if (mode === 'minor' && position === 6) { // VII is at position 6
+          if (selectedChordTypes.minorSeventhType === 'flat7') {
+            return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
+          } else if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return false;
+          } else { // 'both'
+            return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
+          }
+        }
         return selectedChordTypes.simpleTriads;
       }
       if (type === 'dim') {
@@ -295,6 +351,15 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           return selectedChordTypes.diminishedChords && 
                  selectedChordTypes.simpleTriads && 
                  !useFlatSeven;
+        }
+        // Special handling for vii° in minor mode
+        if (mode === 'minor' && position === 6) { // VII position
+          if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
+          } else if (selectedChordTypes.minorSeventhType === 'both') {
+            return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
+          }
+          return false;
         }
         return selectedChordTypes.diminishedChords && selectedChordTypes.simpleTriads;
       }
@@ -309,6 +374,15 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           return selectedChordTypes.diminishedChords && 
                  selectedChordTypes.seventhChords && 
                  !useFlatSeven;
+        }
+        // Special handling for vii°7 in minor mode
+        if (mode === 'minor' && position === 6) { // VII position
+          if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return selectedChordTypes.diminishedChords && selectedChordTypes.seventhChords;
+          } else if (selectedChordTypes.minorSeventhType === 'both') {
+            return selectedChordTypes.diminishedChords && selectedChordTypes.seventhChords;
+          }
+          return false;
         }
         return selectedChordTypes.diminishedChords && selectedChordTypes.seventhChords;
       }
@@ -331,6 +405,16 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
             return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
           } else if (selectedChordTypes.minorDominantType === 'minor') {
             return selectedChordTypes.seventhChords && type === 'm7';
+          } else { // 'both'
+            return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
+          }
+        }
+        // Special handling for VII7 in minor mode
+        if (mode === 'minor' && position === 6) {
+          if (selectedChordTypes.minorSeventhType === 'flat7') {
+            return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
+          } else if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return false;
           } else { // 'both'
             return selectedChordTypes.seventhChords || selectedChordTypes.dominantSeventh;
           }
@@ -370,6 +454,16 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
             return false;
           }
         }
+        // Special handling for VII7 in minor mode
+        if (mode === 'minor' && position === 6) {
+          if (selectedChordTypes.minorSeventhType === 'flat7') {
+            return selectedChordTypes.seventhChords;
+          } else if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return false;
+          } else { // 'both'
+            return selectedChordTypes.seventhChords;
+          }
+        }
         return selectedChordTypes.seventhChords;
       }
       // Handle m7 chords
@@ -386,6 +480,16 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           if (selectedChordTypes.minorDominantType === 'major') {
             return false;
           } else {
+            return selectedChordTypes.seventhChords;
+          }
+        }
+        // Special handling for VII7 in minor mode
+        if (mode === 'minor' && position === 6) {
+          if (selectedChordTypes.minorSeventhType === 'flat7') {
+            return selectedChordTypes.seventhChords;
+          } else if (selectedChordTypes.minorSeventhType === 'diminished') {
+            return false;
+          } else { // 'both'
             return selectedChordTypes.seventhChords;
           }
         }
