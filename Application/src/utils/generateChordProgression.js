@@ -17,7 +17,7 @@ const MODE_CHORD_TYPES = {
     ['dim', 'm7b5'],   // ii°
     ['major', 'maj7'], // III
     ['minor', 'm7'],   // iv
-    ['minor', 'm7'],   // v
+    ['major', 'minor', '7', 'm7'],   // V or v
     ['major', 'maj7'], // VI
     ['major', '7']     // VII
   ],
@@ -123,7 +123,13 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
 
   // Get the scale notes for the given key and mode
   const scale = Scale.get(`${key} ${mode}`);
-  const scaleNotes = scale.notes;
+  let scaleNotes = scale.notes;
+
+  // If we're in minor mode and major V is selected, use harmonic minor scale
+  if (mode === 'minor' && selectedChordTypes.minorDominantType === 'major') {
+    const harmonicMinor = Scale.get(`${key} harmonic minor`);
+    scaleNotes = harmonicMinor.notes;
+  }
 
   // Get the chord types for the current mode
   const chordTypes = MODE_CHORD_TYPES[mode] || MODE_CHORD_TYPES.major;
@@ -205,6 +211,7 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         return flatMap[loweredNote] || loweredNote;
       }
     }
+
     return scaleNotes[position];
   };
 
@@ -226,6 +233,18 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
           } else { // 'both'
             return selectedChordTypes.simpleTriads;
           }
+        }
+        // Special handling for v/V in minor mode
+        if (mode === 'minor' && position === 4) { // v is at position 4
+          if (selectedChordTypes.minorDominantType === 'major') {
+            return type === 'major' && selectedChordTypes.simpleTriads;
+          } else {
+            return type === 'minor' && selectedChordTypes.simpleTriads;
+          }
+        }
+        // Special handling for VI in minor mode - must be major
+        if (mode === 'minor' && position === 5) { // VI is at position 5
+          return type === 'major' && selectedChordTypes.simpleTriads;
         }
         // Special handling for vii/bVII in major mode
         if (mode === 'major' && position === 6) { // vii is at position 6
@@ -350,13 +369,20 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
     const randomPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
     const note = getRootNote(randomPosition);
     const chordOptions = filterChordTypes(chordTypes[randomPosition], randomPosition);
-    if (chordOptions.length === 0) {
-      // If no chord types are allowed for this position, try a different position
-      i--;
-      continue;
+    
+    // Special handling for major V in minor mode
+    if (mode === 'minor' && randomPosition === 4 && selectedChordTypes.minorDominantType === 'major') {
+      const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
+      progression.push(note + type);
+    } else {
+      if (chordOptions.length === 0) {
+        // If no chord types are allowed for this position, try a different position
+        i--;
+        continue;
+      }
+      const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
+      progression.push(note + type);
     }
-    const type = chordOptions[Math.floor(Math.random() * chordOptions.length)];
-    progression.push(note + type);
   }
 
   return progression;

@@ -9,7 +9,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     minorMajorSeventh: false,
     dominantSeventh: false,
     borrowedChordType: 'major', // 'major', 'both', or 'minor'
-    leadingToneType: 'diminished' // 'diminished' or 'flat7'
+    leadingToneType: 'diminished', // 'diminished' or 'flat7'
+    minorDominantType: 'minor' // 'minor' or 'major'
   });
 
   // Reset chord types when mode changes
@@ -22,7 +23,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       minorMajorSeventh: false,
       dominantSeventh: false,
       borrowedChordType: 'major',
-      leadingToneType: 'diminished'
+      leadingToneType: 'diminished',
+      minorDominantType: 'minor'
     };
     setSelectedTypes(defaultTypes);
     onChordTypesChange(defaultTypes);
@@ -63,6 +65,14 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
   const handleLeadingToneChange = (value) => {
     setSelectedTypes(prev => {
       const newState = { ...prev, leadingToneType: value };
+      onChordTypesChange(newState);
+      return newState;
+    });
+  };
+
+  const handleMinorDominantChange = (value) => {
+    setSelectedTypes(prev => {
+      const newState = { ...prev, minorDominantType: value };
       onChordTypesChange(newState);
       return newState;
     });
@@ -139,6 +149,18 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       }
     ];
 
+    const minorOptions = [
+      ...baseOptions,
+      {
+        id: 'minorDominantSelector',
+        type: 'minorDominant',
+        label: 'Dominant Chord',
+        description: 'Choose whether to use minor v or major V',
+        value: selectedTypes.minorDominantType,
+        onChange: handleMinorDominantChange
+      }
+    ];
+
     switch (mode) {
       case 'chromatic':
         return {
@@ -156,7 +178,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
         return {
           name: 'Minor Mode',
           description: 'Select which types of chords to include in your progression',
-          options: baseOptions
+          options: minorOptions
         };
       case 'dorian':
         return {
@@ -281,6 +303,35 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Both
+                  </label>
+                </div>
+              </div>
+            ) : option.type === 'minorDominant' ? (
+              <div className="borrowed-chord-selector">
+                <div className="option-header">
+                  <label>{option.label}</label>
+                </div>
+                <p className="option-description">{option.description}</p>
+                <div className="borrowed-chord-options">
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorDominant"
+                      value="minor"
+                      checked={option.value === 'minor'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Minor v
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorDominant"
+                      value="major"
+                      checked={option.value === 'major'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Major V
                   </label>
                 </div>
               </div>
