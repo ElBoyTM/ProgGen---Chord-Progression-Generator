@@ -8,7 +8,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
     seventhChords: true,
     minorMajorSeventh: false,
     dominantSeventh: false,
-    borrowedChordType: 'major', // 'major', 'both', or 'minor'
+    subdominantType: 'major', // 'major', 'both', or 'minor'
     leadingToneType: 'diminished', // 'diminished' or 'flat7'
     minorDominantType: 'minor', // 'minor', 'major', or 'both'
     minorSeventhType: 'flat7' // 'flat7', 'diminished', or 'both'
@@ -23,7 +23,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       seventhChords: true,
       minorMajorSeventh: false,
       dominantSeventh: false,
-      borrowedChordType: 'major',
+      subdominantType: 'major',
       leadingToneType: 'diminished',
       minorDominantType: 'minor',
       minorSeventhType: 'flat7'
@@ -58,7 +58,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
 
   const handleBorrowedChordChange = (value) => {
     setSelectedTypes(prev => {
-      const newState = { ...prev, borrowedChordType: value };
+      const newState = { ...prev, subdominantType: value };
       onChordTypesChange(newState);
       return newState;
     });
@@ -107,7 +107,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'seventhChords',
         label: 'Seventh Chords',
-        description: 'Major 7th, minor 7th, and dominant 7th chords',
+        description: 'All 7th chords',
         enabled: selectedTypes.seventhChords,
         disabled: false
       }
@@ -119,23 +119,23 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'dominantSeventh',
         label: 'Dominant 7th',
-        description: 'Allow dominant 7th chords (e.g., C7)',
+        description: 'Allow dominant 7th chords',
         enabled: selectedTypes.dominantSeventh,
         disabled: selectedTypes.seventhChords
       },
       {
-        id: 'borrowedChordSelector',
-        type: 'borrowedChord',
-        label: 'Borrowed Chords',
+        id: 'subdominantSelector',
+        type: 'subdominant',
+        label: 'Subdominant',
         description: 'Choose whether to use major IV, minor iv, or both',
-        value: selectedTypes.borrowedChordType,
+        value: selectedTypes.subdominantType,
         onChange: handleBorrowedChordChange
       },
       {
         id: 'leadingToneSelector',
         type: 'leadingTone',
         label: 'Leading Tone',
-        description: 'Choose whether to use diminished vii° or flat bVII',
+        description: 'Choose whether to use vii° or bVII',
         value: selectedTypes.leadingToneType,
         onChange: handleLeadingToneChange
       }
@@ -153,7 +153,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'minorMajorSeventh',
         label: 'Minor-Major 7th',
-        description: 'Minor chords with major 7th (e.g., CmM7)',
+        description: 'Minor chords with major 7th',
         enabled: selectedTypes.minorMajorSeventh,
         disabled: !selectedTypes.seventhChords
       }
@@ -164,7 +164,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'minorDominantSelector',
         type: 'minorDominant',
-        label: 'Dominant Chord',
+        label: 'Dominant',
         description: 'Choose whether to use minor v, major V, or both',
         value: selectedTypes.minorDominantType,
         onChange: handleMinorDominantChange
@@ -172,8 +172,8 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       {
         id: 'minorSeventhSelector',
         type: 'minorSeventh',
-        label: 'Seventh Scale Degree',
-        description: 'Choose whether to use flat VII or diminished vii°',
+        label: 'Subtonic',
+        description: 'Choose whether to use bVII or vii°',
         value: selectedTypes.minorSeventhType,
         onChange: handleMinorSeventhChange
       }
@@ -246,7 +246,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
       <div className="options-container">
         {modeOptions.options.map(option => (
           <div key={option.id} className="option-item">
-            {option.type === 'borrowedChord' ? (
+            {option.type === 'subdominant' ? (
               <div className="borrowed-chord-selector">
                 <div className="option-header">
                   <label>{option.label}</label>
@@ -256,7 +256,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                   <label>
                     <input
                       type="radio"
-                      name="borrowedChord"
+                      name="subdominant"
                       value="major"
                       checked={option.value === 'major'}
                       onChange={(e) => option.onChange(e.target.value)}
@@ -266,7 +266,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                   <label>
                     <input
                       type="radio"
-                      name="borrowedChord"
+                      name="subdominant"
                       value="both"
                       checked={option.value === 'both'}
                       onChange={(e) => option.onChange(e.target.value)}
@@ -276,7 +276,7 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                   <label>
                     <input
                       type="radio"
-                      name="borrowedChord"
+                      name="subdominant"
                       value="minor"
                       checked={option.value === 'minor'}
                       onChange={(e) => option.onChange(e.target.value)}

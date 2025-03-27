@@ -288,9 +288,9 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
         }
         // Special handling for IV/iv in major mode
         if (mode === 'major' && position === 3) { // IV is at position 3
-          if (selectedChordTypes.borrowedChordType === 'major') {
+          if (selectedChordTypes.subdominantType === 'major') {
             return type === 'major' && selectedChordTypes.simpleTriads;
-          } else if (selectedChordTypes.borrowedChordType === 'minor') {
+          } else if (selectedChordTypes.subdominantType === 'minor') {
             return type === 'minor' && selectedChordTypes.simpleTriads;
           } else { // 'both'
             return selectedChordTypes.simpleTriads;
@@ -398,9 +398,9 @@ export function generateChordProgression(key, mode, length, startOnTonic, select
       }
       // Special handling for seventh chords in IV position in major mode
       if (mode === 'major' && position === 3) { // IV is at position 3
-        if (selectedChordTypes.borrowedChordType === 'major') {
+        if (selectedChordTypes.subdominantType === 'major') {
           return type === 'maj7' && selectedChordTypes.seventhChords;
-        } else if (selectedChordTypes.borrowedChordType === 'minor') {
+        } else if (selectedChordTypes.subdominantType === 'minor') {
           return type === 'mM7' && selectedChordTypes.seventhChords;
         } else { // 'both'
           return (type === 'maj7' && selectedChordTypes.seventhChords) || 
