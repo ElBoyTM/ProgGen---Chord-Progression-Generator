@@ -306,21 +306,21 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                     <input
                       type="radio"
                       name="leadingTone"
-                      value="flat7"
-                      checked={option.value === 'flat7'}
-                      onChange={(e) => option.onChange(e.target.value)}
-                    />
-                    Flat bVII
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="leadingTone"
                       value="both"
                       checked={option.value === 'both'}
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Both
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="leadingTone"
+                      value="flat7"
+                      checked={option.value === 'flat7'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Flat bVII
                   </label>
                 </div>
               </div>
@@ -345,21 +345,21 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                     <input
                       type="radio"
                       name="minorDominant"
-                      value="major"
-                      checked={option.value === 'major'}
-                      onChange={(e) => option.onChange(e.target.value)}
-                    />
-                    Major V
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="minorDominant"
                       value="both"
                       checked={option.value === 'both'}
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Both
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorDominant"
+                      value="major"
+                      checked={option.value === 'major'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Major V
                   </label>
                 </div>
               </div>
@@ -384,21 +384,21 @@ function ChordTypeSelector({ selectedMode, onChordTypesChange }) {
                     <input
                       type="radio"
                       name="minorSeventh"
-                      value="diminished"
-                      checked={option.value === 'diminished'}
-                      onChange={(e) => option.onChange(e.target.value)}
-                    />
-                    Diminished vii°
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="minorSeventh"
                       value="both"
                       checked={option.value === 'both'}
                       onChange={(e) => option.onChange(e.target.value)}
                     />
                     Both
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="minorSeventh"
+                      value="diminished"
+                      checked={option.value === 'diminished'}
+                      onChange={(e) => option.onChange(e.target.value)}
+                    />
+                    Diminished vii°
                   </label>
                 </div>
               </div>
